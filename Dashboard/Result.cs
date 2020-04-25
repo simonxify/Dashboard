@@ -96,15 +96,20 @@ namespace Dashboard
                     listForce.Add(Convert.ToDecimal(values[0]));
                     listDisplacement.Add(Convert.ToDecimal(values[1]));
                 }
+                string fileToLoad = "\\AddInFolder\\";
                 //MessageBox.Show(selectedOption.ToString());
                 if (selectedOption == 0)
                 {
-                    findTotal(listForce,listDisplacement);
+                    //total load
+                    fileToLoad = fileToLoad + "Total.dll";
+                    findAverage(listForce,listDisplacement,fileToLoad,0);
                     
                 }
                 if (selectedOption == 1)
                 {
-                    findAverage(listForce,listDisplacement);
+                    //averageload
+                    fileToLoad = fileToLoad + "Average.dll";
+                    findAverage(listForce,listDisplacement,fileToLoad,1);
                     
                 }
 
@@ -116,7 +121,7 @@ namespace Dashboard
                 return dt;
         }
 
-        private void findAverage(List<decimal> listForce, List<decimal> listDisplacement)
+        private void findAverage(List<decimal> listForce, List<decimal> listDisplacement,string fileToLoad, int option)
         {
             currentDirectory = Directory.GetCurrentDirectory();
             //MessageBox.Show(currentDirectory);
@@ -124,31 +129,45 @@ namespace Dashboard
             //string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             try
             {
-                Type[] externalDLLTypes = Assembly.LoadFrom(currentDirectory + "\\AddInFolder\\Average.dll").GetTypes();
+                Type[] externalDLLTypes = Assembly.LoadFrom(currentDirectory + $"{fileToLoad}").GetTypes();
 
                 dynamic avgFinder = Activator.CreateInstance(externalDLLTypes[0]);
 
-                var avgValues = avgFinder.FindAverage(listForce, listDisplacement);
-                txtTotalForce.Text = Convert.ToString(avgValues.Item1);
-                txtTotalDisplacement.Text = Convert.ToString(avgValues.Item2);
-                lblResult.Text = "Average";
-                lblResultForce.Text = "Average Force";
-                lblResultDisplacement.Text = "Average Displacement";
-                pnlColor.BackColor = Color.LawnGreen;
+                if (option == 0)
+                {
+                    var totalValues = avgFinder.FindTotalForce(listForce, listDisplacement);
+                    txtTotalForce.Text = Convert.ToString(totalValues.Item1);
+                    txtTotalDisplacement.Text = Convert.ToString(totalValues.Item2);
+                    lblResult.Text = Convert.ToString(totalValues.Item3);
+                    lblResultForce.Text = Convert.ToString(totalValues.Item4);
+                    lblResultDisplacement.Text = Convert.ToString(totalValues.Item5);
+                    pnlColor.BackColor = Color.Fuchsia;
+                }
+                if (option == 1)
+                {
+                    var avgValues = avgFinder.FindAverage(listForce, listDisplacement);
+                    txtTotalForce.Text = Convert.ToString(avgValues.Item1);
+                    txtTotalDisplacement.Text = Convert.ToString(avgValues.Item2);
+                    lblResult.Text = Convert.ToString(avgValues.Item3); 
+                    lblResultForce.Text = Convert.ToString(avgValues.Item4); 
+                    lblResultDisplacement.Text = Convert.ToString(avgValues.Item5);
+                    pnlColor.BackColor = Color.LawnGreen;
+                }
+                
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-
+        /*
         private void findTotal(List<decimal> listForce, List<decimal> listDisplacement)
         {
             currentDirectory = Directory.GetCurrentDirectory();
             /*total t = new total();
             var totalValues = t.FindTotalForce(listForce, listDisplacement);
             
-            */
+            
             try
             {
                 Type[] externalDLLType = Assembly.LoadFrom(currentDirectory + "\\AddInFolder\\Total.dll").GetTypes();
@@ -168,5 +187,6 @@ namespace Dashboard
                 MessageBox.Show(ex.Message);
             }
         }
+        */
     }
 }

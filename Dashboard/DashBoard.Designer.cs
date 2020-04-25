@@ -54,6 +54,7 @@
             // 
             // cmbResultSelect
             // 
+            this.cmbResultSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbResultSelect.FormattingEnabled = true;
             this.cmbResultSelect.Items.AddRange(new object[] {
             "Total",
